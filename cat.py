@@ -16,3 +16,5 @@ class Cat():
         if not isinstance(other, Cat):
             raise ValueError(f"Expected {type(self)}, got {type(other)} instead")
         return f"HiMeow, {other.name}, I'm {self.name}"
+    
+        
