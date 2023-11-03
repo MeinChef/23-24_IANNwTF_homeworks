@@ -21,4 +21,4 @@ data = load_digits(n_class=10, return_X_y=True, as_frame=True)
 #y = data[1]
 #newdata = np.array((x,y))
 
-#print(newdata)
+print(data)
