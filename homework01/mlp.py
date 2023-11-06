@@ -1,23 +1,20 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
+
 
 def sigmoid(x):
     sig = 1/(1 + np.exp(-x))
     return sig
 
-#load data
-#return_X_y=True makes it into a tuple of two array
-#as_frame=True makes it into two dataframes
-#no idea hpw to convert one tuple of two arrays(datas)(targets) into individual tuples of (data, target) 
-#This below works with normal arrays, but ours are stupid:
-#ValueError: setting an array element with a sequence. The requested array has an inhomogeneous 
-#shape after 2 dimensions. The detected shape was (2, 1797) + inhomogeneous part
+def sigmoid_derivative(x):
+    sig_der = sigmoid(x) * (1 -sigmoid(x))
+    return sig_der
 
-#x = data[0]
-#y = data[1]
-#newdata = np.array((x,y))
+def softmax(x):
+    ep = np.exp(x)
+    softm =  ep / np.sum(ep)
+    return softm
 
 
 def plot_img(digits):
@@ -26,6 +23,7 @@ def plot_img(digits):
     plt.matshow(digits.reshape(8,8))
     plt.show()
     
+
 def weird_vectors(target):
 
     vectors = np.zeros((len(target), 10), dtype = np.int32)
@@ -44,28 +42,25 @@ def pirate_shuffle(arr1, arr2, minib_size = 0):
     perm = np.random.permutation(len(arr1))
 
     if(minib_size != 0):
-        arr1 = np.split(arr1[perm], minib_size)
-        arr2 = np.split(arr2[perm], minib_size)
+        arr1 = np.array_split(arr1[perm], minib_size)
+        arr2 = np.array_split(arr2[perm], minib_size)
 
         return arr1, arr2
 
     else:
 
         return arr1[perm], arr2[perm]
+    
+
 
     
-#plot_img(data[0][0])
 
 if __name__ == "__main__":
 
-    data, target = load_digits(return_X_y = True) # data is a tuple now - well nvm
-
-    #plot_img(data[0][0])
-    #print(np.max(data[0]))
+    data, target = load_digits(return_X_y = True) # roughly 1800 entries
 
     data = np.float32(data)/20 # adjust to values between [0:1] and cast to float32
 
     target = weird_vectors(target) # make them one-hot vectors
-    data, target = pirate_shuffle(arr1 = data, arr2 = target) # shuffle them good
-
-
+    data, target = pirate_shuffle(arr1 = data, arr2 = target, minib_size = 10) # shuffle 'em good
+    
