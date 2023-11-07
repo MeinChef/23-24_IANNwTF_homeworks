@@ -21,3 +21,4 @@ if __name__ == "__main__":
     target = func.weird_vectors(target) # make them one-hot vectors
     data, target = func.pirate_shuffle(arr1 = data, arr2 = target, minib_size = 10) # shuffle 'em good
     
+    

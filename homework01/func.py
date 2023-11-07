@@ -28,7 +28,7 @@ def weird_vectors(target):
 
 def pirate_shuffle(arr1, arr2, minib_size = 0):
 
-    assert len(arr1) == len(arr2)
+    assert len(arr1) == len(arr2), "array 1 and 2 should have the same length!"
     perm = np.random.permutation(len(arr1))
 
     if(minib_size != 0):
