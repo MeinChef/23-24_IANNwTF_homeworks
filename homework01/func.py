@@ -13,6 +13,14 @@ def softmax(x):
     return ep / np.sum(ep)
 
 
+def cce(x, target):
+    assert x > 0 and x < 1, f"x is not between 0 and 1"
+    return -np.sum(target * np.log(x))
+
+def cce_softmax_derivative(x, target):
+    return x - target
+
+
 
 def weird_vectors(target):
 
@@ -40,3 +48,4 @@ def pirate_shuffle(arr1, arr2, minib_size = 0):
     else:
 
         return arr1[perm], arr2[perm]
+    
