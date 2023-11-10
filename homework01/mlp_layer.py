@@ -55,4 +55,4 @@ class MLP_LAYER:
         return error
 
     def update_weights(self, weight_gradient, learning_rate):
-        self.weights = self.weights - learning_rate * weight_gradient
+        self.weights = self.weights + learning_rate * weight_gradient

@@ -50,14 +50,13 @@ class MLP:
 
                 error = layer.cross_backward(error)
 
-                
-
-
+            
     def forwards(self, input):
 
         for layer in self.layer:
             input = layer.forward(input)
-
+        
+        return input
 
 
 

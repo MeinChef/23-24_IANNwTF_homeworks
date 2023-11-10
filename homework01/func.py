@@ -51,7 +51,16 @@ def pirate_shuffle(arr1, arr2, minib_size = 0):
     
 def train(ann, input, target, epochs = 5):
     
-    while epochs > 0:
-        ann.forwards(input)
-        ann.backwards(target)
-        epochs -= 1
+    mean_loss = np.zeros(len(input), dtype = np.float32)
+    total_mean = np.zeros(epochs, dtype = int)
+
+    for epoch in range(epochs):
+        for i in range(len(input)):
+            a = ann.forwards(input[i])
+            ann.backwards(target[i])
+            mean_loss[i] = cce(a, target[i])
+
+        print(mean_loss)
+        total_mean[epoch] = np.mean(mean_loss)
+    
+    return total_mean
