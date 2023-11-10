@@ -28,8 +28,6 @@ class MLP_LAYER:
         self.preactivation = (input @ self.weights) + self.bias
         self.activation = self.activ_func(self.preactivation)
 
-        print(f'In Layer: {self.activation.shape}')
-
         assert np.shape(self.activation)[0] == self.units, "Please check all inputs again, something went wrong."
 
         return self.activation
@@ -37,16 +35,22 @@ class MLP_LAYER:
     def weights_backward(self, error_signal):
 
         # and we also saved the gradients in here, for consistency sake.
-        self.weight_gradient = np.outer(error_signal, self.input)
-        derivativeLinput = error_signal * self.weights
+        self.weight_gradient = np.outer(self.input, error_signal)
+
+
+    
+    def cross_backward(self, error_part):
+
+        derivativeLinput = self.weights @ error_part
 
         return derivativeLinput
+    
 
     def calc_error(self, error_prev): # which should be derivativeLinput
-        
-        error = error_prev * self.func_deriv(self.input)
 
-        assert [1] == self.units
+        error = error_prev * self.func_deriv(self.preactivation)
+
+        assert error.shape[0] == self.units
 
         return error
 

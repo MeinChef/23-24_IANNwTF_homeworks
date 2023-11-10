@@ -53,6 +53,5 @@ def train(ann, input, target, epochs = 5):
     
     while epochs > 0:
         ann.forwards(input)
-        print(cce(ann.layer[-1].activation, target = target))
         ann.backwards(target)
         epochs -= 1

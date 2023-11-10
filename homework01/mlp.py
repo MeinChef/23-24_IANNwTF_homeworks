@@ -29,18 +29,28 @@ class MLP:
 
     def backwards(self, target):
 
-        error = func.cce_softmax_derivative(self.layer[-1].activation, target)
+        error0 = func.cce_softmax_derivative(self.layer[-1].activation, target)
+        error = ""
 
         for layer in reversed(self.layer):
 
             if layer == self.layer[-1]:
-                error = layer.weights_backward(error)
+
+                layer.weights_backward(error0)
                 layer.update_weights(weight_gradient = layer.weight_gradient, learning_rate = self.learning_rate)
+
+                error = layer.cross_backward(error0)
             
             else:
+
                 error = layer.calc_error(error)
-                error = layer.weights_backward(error)
+
+                layer.weights_backward(error)
                 layer.update_weights(weight_gradient = layer.weight_gradient, learning_rate = self.learning_rate)
+
+                error = layer.cross_backward(error)
+
+                
 
 
     def forwards(self, input):
