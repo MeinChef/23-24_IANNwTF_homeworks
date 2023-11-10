@@ -14,7 +14,7 @@ def softmax(x):
 
 
 def cce(x, target):
-    assert x > 0 and x < 1, f"x is not between 0 and 1"
+    assert x.all() >= 0 and x.all() <= 1, f"x is not between 0 and 1"
     return -np.sum(target * np.log(x))
 
 def cce_softmax_derivative(x, target):
@@ -49,3 +49,10 @@ def pirate_shuffle(arr1, arr2, minib_size = 0):
 
         return arr1[perm], arr2[perm]
     
+def train(ann, input, target, epochs = 5):
+    
+    while epochs > 0:
+        ann.forwards(input)
+        print(cce(ann.layer[-1].activation, target = target))
+        ann.backwards(target)
+        epochs -= 1
