@@ -29,6 +29,9 @@ class MLP:
 
     def backwards(self, target):
 
+        self.layer[-1].apply_cce(target)
+        #print(f'cce of last layer: {self.layer[-1].cce}')
+
         error0 = func.cce_softmax_derivative(self.layer[-1].activation, target)
         error = ""
 
@@ -37,16 +40,19 @@ class MLP:
             if layer == self.layer[-1]:
 
                 layer.weights_backward(error0)
-                layer.update_weights(weight_gradient = layer.weight_gradient, learning_rate = self.learning_rate)
+                layer.update_weights(learning_rate = self.learning_rate)
+                #print(f'weights{layer.weights}')
 
                 error = layer.cross_backward(error0)
+                #print(f'error{error}')
+
             
             else:
 
                 error = layer.calc_error(error)
 
                 layer.weights_backward(error)
-                layer.update_weights(weight_gradient = layer.weight_gradient, learning_rate = self.learning_rate)
+                layer.update_weights(learning_rate = self.learning_rate)
 
                 error = layer.cross_backward(error)
 
@@ -55,7 +61,7 @@ class MLP:
 
         for layer in self.layer:
             input = layer.forward(input)
-        
+
         return input
 
 

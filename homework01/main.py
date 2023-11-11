@@ -13,9 +13,7 @@ def plot_img(digits):
     plt.show()
     
 # function to display loss over epochs
-def plot_loss(loss, num_epochs):
-
-    #epochs = np.linspace(1, num_epochs, dtype = int)
+def plot_loss(loss):
 
     plt.plot(loss)
     plt.show()
@@ -29,13 +27,41 @@ if __name__ == "__main__":
     target = func.weird_vectors(target) # make them one-hot vectors
     data, target = func.pirate_shuffle(arr1 = data, arr2 = target, minib_size = 10) # shuffle 'em good
     
-    MLP = mlp.MLP(num_layer = 4, layer_sizes = (64, 32, 16, 10))
-    #for smol_data, smol_target  in zip(data[0], target[0]):
-    #    func.train(ann = MLP, input = smol_data, target = smol_target, epochs = 20)
+    # create MLP with arbitrary amount of layers/neurons. (64 for first layer, as it has to equal one dataset, 10 for last layer, as it has to equal target)
+    MLP = mlp.MLP(num_layer = 4, layer_sizes = (64, 128, 64, 10))
 
-    epochs = 4
-    loss = func.train(ann = MLP, input = data[0], target = target[0], epochs = epochs)
+    # train the network, save the loss
+    epochs = 100
+    loss = []
+    for part_data, part_target  in zip(data[0:7], target[0:7]):
+        loss.append(func.train(ann = MLP, input = part_data, target = part_target, epochs = epochs))
+        
+        print(f'weiteres minibatch abgeschlossen') # our progress bar
 
-    plot_loss(loss = loss, num_epochs = epochs)
+
+    pred = MLP.forwards(data[-1][0])
+    print(f'prediction: {np.argmax(pred)}')
+    print(f'target:     {np.argmax(target[-1][0])}')
+
+    plot_loss(loss = loss)
+
+
+
+    ###########################
+    # we let it run 4 times, trained on batches 0-7, tested on batch 9:
+    # 
+    # prediction: 9
+    # target: 9
+    #
+    # prediction: 3
+    # target: 2
+    #
+    # prediction: 9
+    # target: 9
+    # 
+    # prediction: 3
+    # target: 3
+    ###########################
+
 
     

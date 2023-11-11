@@ -35,7 +35,7 @@ class MLP_LAYER:
     def weights_backward(self, error_signal):
 
         # and we also saved the gradients in here, for consistency sake.
-        self.weight_gradient = np.outer(self.input, error_signal)
+        self.weight_gradient = np.outer(error_signal, self.input)
 
 
     
@@ -54,5 +54,8 @@ class MLP_LAYER:
 
         return error
 
-    def update_weights(self, weight_gradient, learning_rate):
-        self.weights = self.weights + learning_rate * weight_gradient
+    def update_weights(self, learning_rate):
+        self.weights = self.weights - learning_rate * self.weight_gradient.T
+
+    def apply_cce(self, target):
+        self.cce = func.cce(self.activation, target)
