@@ -1,6 +1,5 @@
 import numpy as np
 
-
 # functions and their derivatives
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
@@ -37,12 +36,12 @@ def weird_vectors(target):
     return vectors
 
 
-# function for shuffling and minibatching
+# function for shuffling and minibatching (pirates because of arr, you know? arr.)
 def pirate_shuffle(arr1, arr2, minib_size = 0):
 
- 
+    # since we have to shuffle the arrays (data, target) in parallel, they need to have the same length.
     assert len(arr1) == len(arr2), "array 1 and 2 should have the same length!"
-    
+
     # created a permutation that can later be used for indexing (shuffling)
     perm = np.random.permutation(len(arr1))
 
@@ -59,7 +58,7 @@ def pirate_shuffle(arr1, arr2, minib_size = 0):
         return arr1[perm], arr2[perm]
     
     
-
+# training the mlp and calulating the mean loss for each epoch
 def train(ann, input, target, epochs = 5):
     
     mean_loss = np.zeros(len(input), dtype = np.float32)
@@ -71,8 +70,6 @@ def train(ann, input, target, epochs = 5):
             ann.backwards(target[i])
             mean_loss[i] = cce(a, target[i])
 
-        #print(mean_loss)
         total_mean[epoch] = np.mean(mean_loss)
-        #print(f'Total loss: {total_mean}')
     
     return total_mean

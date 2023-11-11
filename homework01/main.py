@@ -16,34 +16,43 @@ def plot_img(digits):
 def plot_loss(loss):
 
     plt.plot(loss)
+    plt.xlabel(xlabel = "Epochs")
+    plt.ylabel(ylabel = "Average Loss")
     plt.show()
 
 if __name__ == "__main__":
 
     data, target = load_digits(return_X_y = True) # roughly 1800 entries
 
-    data = np.float32(data)/20 # adjust to values between [0:1] and cast to float32
+    # adjust to values between [0:1] and cast to float32
+    data = np.float32(data)/20 
 
-    target = func.weird_vectors(target) # make them one-hot vectors
-    data, target = func.pirate_shuffle(arr1 = data, arr2 = target, minib_size = 10) # shuffle 'em good
+    # make them one-hot vectors
+    target = func.weird_vectors(target) 
+    # shuffle 'em good
+    data, target = func.pirate_shuffle(arr1 = data, arr2 = target, minib_size = 10) 
     
     # create MLP with arbitrary amount of layers/neurons. (64 for first layer, as it has to equal one dataset, 10 for last layer, as it has to equal target)
     MLP = mlp.MLP(num_layer = 4, layer_sizes = (64, 128, 64, 10))
 
     # train the network, save the loss
     epochs = 100
-    loss = []
+    loss = np.zeros((7, epochs))
+    helper = 0
+    
     for part_data, part_target  in zip(data[0:7], target[0:7]):
-        loss.append(func.train(ann = MLP, input = part_data, target = part_target, epochs = epochs))
+
+        loss[helper] = func.train(ann = MLP, input = part_data, target = part_target, epochs = epochs)
+        helper += 1
         
         print(f'weiteres minibatch abgeschlossen') # our progress bar
 
-
+    # test the network on a number it hasn't been trained on
     pred = MLP.forwards(data[-1][0])
     print(f'prediction: {np.argmax(pred)}')
     print(f'target:     {np.argmax(target[-1][0])}')
 
-    plot_loss(loss = loss)
+    plot_loss(loss = np.mean(loss, axis = 0))
 
 
 
