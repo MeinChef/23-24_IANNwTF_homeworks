@@ -14,22 +14,42 @@ def pipeline(ds):
     return ds
 
 def training(model, 
-             train, 
+             train,
              test,
-             learning_rate = 0.1,
-             loss_func = tf.keras.losses.CategoricalCrossentropy(from_logits = True), 
-             optimizer = tf.keras.optimizers.legacy.SGD(),
+             optimiser,
+             loss_func = tf.keras.losses.CategoricalCrossentropy(from_logits = True),
              epochs = 10):
     
-    losses = []
+    accuracy = np.empty(epochs)
 
     for epoch in range(epochs):
         for x, target in train:
             
-            with tf.GradientTape() as tape:
+            with tf.GradientTape() as tape: #track accuracy within training
                 pred = model(x)
                 loss = loss_func(target, pred)
             gradients = tape.gradient(loss, model.variables) #calculate outside of the GradientTape context
-            optimizer.appply_gradients(zip(gradients, model.variables))
-            losses.append(loss.np())
-    print(np.mean(losses))
+            optimiser.apply_gradients(zip(gradients, model.variables))
+
+        accuracy = testing(model, test)
+           
+    return accuracy
+
+
+def testing(model, test):
+    
+    accuracy = np.array(shape = len(test), dtype = bool)
+    i = 0
+
+    for x, target in test:
+        pred = model(x)
+        pred = tf.nn.softmax(pred).numpy
+
+        if np.argmax(pred) == np.argmax(target):
+            accuracy[i] = True
+        else:
+            accuracy[i] = False
+
+        i += 1
+
+    return np.mean(accuracy)

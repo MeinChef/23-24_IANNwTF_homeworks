@@ -14,9 +14,13 @@ if __name__ == "__main__":
     # What range are pixel values in?: 0-255
     # tfds.show_examples (train_ds , ds_info)
 
-    ds = func.pipeline(train_ds)
+    train = func.pipeline(train_ds)
+    test = func.pipeline(test_ds)
     
     ann = mlp.MLP_Model(layer_sizes = [256, 256])
-
-
+    optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = 0.1)
     epochs = 50
+
+    acc = func.training(ann, train, test, optimiser)
+
+    func.visualise(acc)
