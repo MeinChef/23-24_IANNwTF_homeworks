@@ -1,7 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import mlp 
-import matplotlib.pyplot as plt
 import func
 
 
@@ -17,10 +16,10 @@ if __name__ == "__main__":
     train = func.pipeline(train_ds)
     test = func.pipeline(test_ds)
     
-    ann = mlp.MLP_Model(layer_sizes = [256, 256])
+    ann = mlp.MLP_Model(layer_sizes = [256, 256]) # task 3: more neurons or more layers?
     optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = 0.1)
-    epochs = 50
 
-    acc = func.training(ann, train, test, optimiser)
+    acc_self, acc_test = func.training(ann, train, test, optimiser)
 
-    func.visualise(acc)
+    print(acc_self)
+    func.visualise(acc_self, acc_test)
