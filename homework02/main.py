@@ -38,6 +38,7 @@ if __name__ == "__main__":
     # no. o. layers                 base, 2 params: (2, 1, 8)
     # no. o. neurons. per layer     base, 2 params: (256, 64, 512)
     # optimiser                     base, 2 params: (sgd, lion, adam)
+    ###################################
 
 
     learning_rates = np.array([0.03, 0.5])
@@ -53,15 +54,14 @@ if __name__ == "__main__":
     acc_layer = [acc_test]
     acc_opt = [acc_test]
     
-    ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
+    
 
-    for learning_rate, i in zip(learning_rates, range(2)): 
+    for learning_rate, i in zip(learning_rates, range(2)):
+        ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
         acc_learn.append(func.var_learn(learning_rate, train, test, ann0))
-
-
-    ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
     
     for batch, i in zip(batch_sizes, range(2)): 
+        ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
         acc_batch.append(func.var_batch(batch, train_ds, test_ds, ann0))
 
     for network_size, i in zip(network_sizes, range(2)): 
@@ -73,8 +73,8 @@ if __name__ == "__main__":
     for opt, i in zip(optimisers, range(2)):
         acc_opt.append(func.var_opt(opt, ann, train, test))
 
-    accuracy_array = np.array([acc_learn, acc_batch, acc_net, acc_layer, acc_opt])
+    #accuracy_array = np.array([np.array(acc_learn), np.array(acc_batch), np.array(acc_net), np.array(acc_layer), np.array(acc_opt)])
+    accuracy  = [acc_learn, acc_batch, acc_net, acc_layer, acc_opt]
 
-    print(accuracy_array.shape)
-    func.vis_accs(accuracy_array)
+    func.vis_accs(accuracy)
 

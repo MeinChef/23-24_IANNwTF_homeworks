@@ -51,7 +51,7 @@ def vis_accs(accs):
 
     for i in range(5):
         for j in range(3):
-            axes[i][j].plot(accs[i][j])
+            axes[i][j].plot(accs[i+j])
             axes[i][j].axhline(1, alpha = 0.5, color = "red", linestyle = "--")
             axes[i][j].set_ylim(0, 1.2)
             axes[i][j].set_xlabel('Epochs')
