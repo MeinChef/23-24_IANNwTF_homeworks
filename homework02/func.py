@@ -22,12 +22,49 @@ def visualise(acc_train, acc_epoch):
 
 
 
+def visualise(acc_epoch, acc_train, loss_epoch, loss_train):
+    fig, (ax1, ax2) = plt.subplots(nrows = 2, ncols = 2)
+    
+    ax1[0].plot(acc_epoch)
+    ax1[0].axhline(1, alpha = 0.5, color = "red", linestyle = "--")
+    ax1[0].set_xlabel('epochs')
+    ax1[0].set_ylabel('accuracy')
+    
+    ax1[1].plot(acc_train)
+    ax1[1].axhline(1, alpha = 0.5, color = "red", linestyle = "--")
+    ax1[1].set_xlabel('every 20th image')
+    ax1[1].set_ylabel('accuracy')
+    
+    ax1[0].set_ylim(0,1.3)
+    ax1[1].sharey(ax1[0])
+
+
+    ax2[0].plot(loss_epoch)
+    ax2[0].set_xlabel('epochs')
+    ax2[0].set_ylabel('loss')
+    ax2[0].sharex(ax1[0])
+
+    ax2[1].plot(loss_train)
+    ax2[1].set_xlabel('every 20th image')
+    ax2[1].set_ylabel('loss')
+    ax2[1].sharex(ax1[1])
+
+    ax2[1].set_ylim(0, max(np.max(loss_epoch), np.max(loss_train)) + 0.5)
+    ax2[0].sharey(ax2[1])
+
+
+    fig.tight_layout()
+
+    plt.show()
+
+
+
 def pipeline(ds):
     ds = ds.map(lambda image, label: ((tf.cast(image, tf.float32)/128)-1, label))
     ds = ds.map(lambda image, label: (tf.reshape(image, (-1,)), label))
     ds = ds.map(lambda image, label: (image, tf.one_hot(label, depth = 10)))
     ds = ds.batch(128)
-    #ds = ds.prefetch(16)
+    ds = ds.prefetch(16)
     return ds
 
 def training(model, 
@@ -83,7 +120,7 @@ def training(model,
         print(f'Epoch {epoch}: with an accuracy of {round(acc_test[epoch], ndigits = 4)} and loss of {round(loss_test[epoch], ndigits = 4)}')
 
            
-    return np.mean(acc_self, axis = 0), acc_test, loss_self, loss_test
+    return np.mean(acc_self, axis = 0), acc_test, np.mean(loss_self, axis = 0), loss_test
 
 
 def testing(model, test, loss_func):

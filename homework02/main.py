@@ -22,6 +22,6 @@ if __name__ == "__main__":
     optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = 0.1)
 
 
-    acc_self, acc_test, loss_self, loss_test = func.training(ann, train, test, optimiser, epochs = 50)
+    acc_self, acc_test, loss_self, loss_test = func.training(ann, train, test, optimiser, epochs = 10)
 
-    func.visualise(acc_self, acc_test)
+    func.visualise(acc_test, acc_self, loss_test, loss_self)
