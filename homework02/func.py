@@ -10,9 +10,10 @@ def visualise(acc_train, acc_epoch):
     ax1.set_ylabel('accuracy')
     
     ax2.plot(acc_train)
-    ax2.set_xlabel('every 200th image')
+    ax2.set_xlabel('every 20th image')
     ax2.set_ylabel('accuracy')
     
+    ax1.set_ylim(0,1)
     ax1.sharey(ax2)
 
     fig.tight_layout()
@@ -38,7 +39,9 @@ def training(model,
     
     step_size = 20
     acc_test = np.empty(epochs)
-    acc_self = np.empty((epochs, int(len(train)/20 + 1)))
+    acc_self = np.empty((epochs, int(len(train)/step_size + 1)))
+    loss_test = np.empty(epochs)
+    loss_self = np.empty((epochs, int(len(train)/step_size + 1)))
     
 
     for epoch in range(epochs):
@@ -50,29 +53,52 @@ def training(model,
                 loss = loss_func(target, pred)
 
             gradients = tape.gradient(loss, model.variables) #calculate outside of the GradientTape context
-            optimiser.apply_gradients(zip(gradients, model.variables))
+            optimiser.apply_gradients(zip(gradients, model.variables)) 
             
-            if counter % 20 == 0: 
+            if counter % step_size == 0: 
                 temp = tf.nn.softmax(pred)
-                acc_self[epoch, int(counter/20)] = np.mean(np.argmax(temp, -1) == np.argmax(target.numpy, -1))
+                acc_self[epoch, int(counter/step_size)] = np.mean(np.argmax(temp, -1) == np.argmax(target, -1))
+                loss_self[epoch, int(counter/step_size)] = np.mean(loss)
             counter += 1
 
-        acc_test[epoch] = testing(model, test)
+        acc_test[epoch], loss_test[epoch] = testing(model, test, loss_func)
+        
+        
+        # maybe we nedd to not pass it over to a function 
+        #
+        # accuracy = np.zeros(len(test))
+        # i = 0
+        # 
+        # for x, target in test:
+        #     pred = model(x)
+        #     pred = tf.nn.softmax(pred)
+        #     
+        #     accuracy[i] = np.mean(np.argmax(pred, -1) == np.argmax(target, -1))
+        #     #print(accuracy[i])
+        #     i += 1
+        # 
+        # acc_test[epoch] = np.mean(accuracy)
+
+
+        print(f'Epoch {epoch}: with an accuracy of {round(acc_test[epoch], ndigits = 4)} and loss of {round(loss_test[epoch], ndigits = 4)}')
+
            
-    return np.mean(acc_self, -1), acc_test
+    return np.mean(acc_self, axis = 0), acc_test, loss_self, loss_test
 
 
-def testing(model, test):
+def testing(model, test, loss_func):
     
-    accuracy = np.zeros(len(test))
+    accuracy = np.empty(len(test))
+    loss = np.empty(len(test))
     i = 0
 
     for x, target in test:
         pred = model(x)
-        pred = tf.nn.softmax(pred).numpy
-        
+        pred = tf.nn.softmax(pred)
+
+        loss[i] = np.mean(loss_func(target, pred))
         accuracy[i] = np.mean(np.argmax(pred, -1) == np.argmax(target, -1))
-        print(accuracy[i])
+
         i += 1
 
-    return np.mean(accuracy)
+    return np.mean(accuracy), np.mean(loss)

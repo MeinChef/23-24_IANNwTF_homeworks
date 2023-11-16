@@ -5,6 +5,8 @@ import func
 
 
 if __name__ == "__main__":
+    
+    
     (train_ds, test_ds), ds_info = tfds.load ('mnist' , split =['train', 'test'], as_supervised = True, with_info = True, shuffle_files = True)
     
     # print(ds_info)
@@ -19,7 +21,7 @@ if __name__ == "__main__":
     ann = mlp.MLP_Model(layer_sizes = [256, 256]) # task 3: more neurons or more layers?
     optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = 0.1)
 
-    acc_self, acc_test = func.training(ann, train, test, optimiser)
 
-    print(acc_self)
+    acc_self, acc_test, loss_self, loss_test = func.training(ann, train, test, optimiser, epochs = 50)
+
     func.visualise(acc_self, acc_test)
