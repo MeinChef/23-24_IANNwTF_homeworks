@@ -24,7 +24,8 @@ if __name__ == "__main__":
     optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = 0.1)
     
     
-    acc_self, acc_test, loss_self, loss_test = func.training_track_all_params(ann, train, test, optimiser)
+    acc_self, acc_test, loss_self, loss_test = func.training_track_all_params(ann, train, test, optimiser, epochs = 5)
+
 
     #func.visualise(acc_test, acc_self, loss_test, loss_self)
     
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     # optimiser                     base, 2 params: (sgd, lion, adam)
     ###################################
 
-
+    
     learning_rates = np.array([0.03, 0.5])
     batch_sizes = np.array([32, 512])
     network_sizes = np.array([1, 8])
@@ -55,7 +56,6 @@ if __name__ == "__main__":
     acc_opt = [acc_test]
     
     
-
     for learning_rate, i in zip(learning_rates, range(2)):
         ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
         acc_learn.append(func.var_learn(learning_rate, train, test, ann0))
@@ -71,7 +71,9 @@ if __name__ == "__main__":
         acc_layer.append(func.var_layer(layer, train, test, optimiser))
 
     for opt, i in zip(optimisers, range(2)):
-        acc_opt.append(func.var_opt(opt, ann, train, test))
+        ann0 = mlp.MLP_Model(layer_sizes = [256, 256])
+        acc_opt.append(func.var_opt(opt, ann0, train, test))
+    
 
     #accuracy_array = np.array([np.array(acc_learn), np.array(acc_batch), np.array(acc_net), np.array(acc_layer), np.array(acc_opt)])
     accuracy  = [acc_learn, acc_batch, acc_net, acc_layer, acc_opt]

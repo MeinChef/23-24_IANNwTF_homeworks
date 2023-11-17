@@ -51,7 +51,7 @@ def vis_accs(accs):
 
     for i in range(5):
         for j in range(3):
-            axes[i][j].plot(accs[i+j])
+            axes[i][j].plot(accs[i][j])
             axes[i][j].axhline(1, alpha = 0.5, color = "red", linestyle = "--")
             axes[i][j].set_ylim(0, 1.2)
             axes[i][j].set_xlabel('Epochs')
@@ -61,12 +61,12 @@ def vis_accs(accs):
     for ax, col in zip(axes[0], cols):
         ax.annotate(col, xy = (0.5, 1.2), xytext=(0, 5),
                 xycoords = 'axes fraction', textcoords = 'offset points',
-                size = 'large', ha = 'center', va = 'baseline')
+                size = 'medium', ha = 'center', va = 'baseline')
 
     for ax, row in zip(axes[:,0], rows):
         ax.annotate(row, xy = (0, 0.5), xytext = (- ax.yaxis.labelpad - 5, 0),
                 xycoords = ax.yaxis.label, textcoords = 'offset points',
-                size = 'large', ha = 'right', va = 'center')
+                size = 'medium', rotation = 90, ha = 'right', va = 'center')
     
     
     fig.set_size_inches(10, 30)
@@ -127,7 +127,7 @@ def training_track_acc_epoch(model,
              test,
              optimiser,
              loss_func = tf.keras.losses.CategoricalCrossentropy(from_logits = True),
-             epochs = 2):
+             epochs = 5):
     
     acc_test = np.empty(epochs)
     
@@ -146,7 +146,7 @@ def training_track_acc_epoch(model,
         print(f'Epoch {epoch}: with an accuracy of {round(acc_test[epoch], ndigits = 4)}')
 
            
-    return acc_test,
+    return acc_test
 
 
 def testing(model, test, loss_func):
