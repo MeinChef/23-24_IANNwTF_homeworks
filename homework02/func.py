@@ -77,6 +77,7 @@ def vis_accs(accs):
 
 
 # pipelline for preparing data
+@tf.function
 def pipeline(ds, batch_size = 128):
     ds = ds.map(lambda image, label: ((tf.cast(image, tf.float32)/128)-1, label))
     ds = ds.map(lambda image, label: (tf.reshape(image, (-1,)), label))

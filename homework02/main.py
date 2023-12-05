@@ -29,7 +29,7 @@ if __name__ == "__main__":
     acc_self, acc_test, loss_self, loss_test = func.training_track_all_params(ann, train, test, optimiser, epochs = 5)
 
     # visualisation of accuracy/loss gathered during training of the default network
-    #func.visualise(acc_test, acc_self, loss_test, loss_self)
+    # func.visualise(acc_test, acc_self, loss_test, loss_self)
     
 
 

@@ -12,6 +12,7 @@ class MLP_Model(tf.keras.Model):
         self.output_layer = tf.keras.layers.Dense(units = output_size)
 
     # call is our forward function
+    @tf.function
     def call(self, x):
         
         for layer in self.mlp_layers:
