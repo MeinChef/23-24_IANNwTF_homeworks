@@ -23,6 +23,9 @@ if __name__ == "__main__":
 
 
     func.train_loop(model0, optimizer0, loss_f0, train_ds, test_ds, NUM_EPOCHS, loss_m, acc_m)
+
+    print("Now it's prime time for Model 2")
+
     func.train_loop(model1, optimizer0, loss_f0, train_ds, test_ds, NUM_EPOCHS, loss_m, acc_m)
 
 
