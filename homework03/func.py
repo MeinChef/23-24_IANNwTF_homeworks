@@ -46,7 +46,7 @@ def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss
             loss_m.update_state(loss)
             acc_m.update_state(target, pred)
         
-        tf.print(f'train-{loss_m.name}: {loss_m.result()}, train-{acc_m.name}: {acc_m.result()}')
+        tf.print(f'train-{loss_m.name}: {loss_m.result().numpy()}, train-{acc_m.name}: {acc_m.result().numpy()}')
         
         #train_acc.write(epoch, acc_m.result())
         #train_loss.write(epoch, loss_m.result())
@@ -63,7 +63,7 @@ def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss
             loss_m.update_state(loss)
             acc_m.update_state(target, pred)
 
-        tf.print(f'test-{loss_m.name}: {loss_m.result()}, test-{acc_m.name}: {acc_m.result()}')
+        tf.print(f'test-{loss_m.name}: {loss_m.result().numpy()}, test-{acc_m.name}: {acc_m.result().numpy()}')
 
         #test_acc.write(epoch, acc_m.result())
         #test_loss.write(epoch, loss_m.result())
