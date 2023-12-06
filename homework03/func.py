@@ -2,7 +2,6 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
 
-@tf.function
 def load_and_prep_cifar(batch_size):
     train, test = tfds.load('cifar10', split = ['train', 'test'], as_supervised = True, shuffle_files = True)
 
@@ -118,8 +117,6 @@ def that_cnn(name = "Meow"):
         # on it, and in the last layer global-pool-average it to reduce the 2x2 image to a vector 
         x = tf.keras.layers.Conv2D(filters = 2**(i+1), kernel_size = 3, padding = 'valid', activation = tf.nn.relu)(x)   # shape: [batch_size, 30, 30, (powers of 2)] 
         # or start with i+3 and stop at step 9 (range(10))
-
-        if i == 11: tf.print(2**(i+1))
 
 
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
