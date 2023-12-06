@@ -21,7 +21,7 @@ def load_and_prep_cifar(batch_size):
     return train, test
 
 
-@tf.function
+#@tf.function
 def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
 
     #train_acc = tf.TensorArray(dtype = tf.float32, size = num_epochs, name = 'train_acc')
