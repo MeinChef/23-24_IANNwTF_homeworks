@@ -19,9 +19,38 @@ def load_and_prep_cifar(batch_size):
 
     return train, test
 
+@tf.function
+def train_step(model, data, loss_f, optimiser, loss_m, acc_m):
 
-#@tf.function
-def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
+    for x, target in data:
+    
+        with tf.GradientTape() as tape:
+            pred = model(x)
+            loss = loss_f(target, pred)
+
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimiser.apply_gradients(zip(gradients, model.trainable_variables))
+    
+        loss_m.update_state(loss)
+        acc_m.update_state(target, pred)
+    
+    return loss_m, acc_m 
+
+
+def test_step(model, test_data, loss_f, loss_m, acc_m):
+    # testing the model
+    for x, target in test_data:
+
+        pred = model(x)
+        loss = loss_f(target, pred)
+    
+        loss_m.update_state(loss)
+        acc_m.update_state(target, pred)
+
+    return loss_m, acc_m
+
+
+def train_loop(model, optimiser, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
 
     #train_acc = tf.TensorArray(dtype = tf.float32, size = num_epochs, name = 'train_acc')
     #train_loss = tf.TensorArray(dtype = tf.float32, size = num_epochs, name = 'train_loss')
@@ -33,17 +62,19 @@ def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss
 
         tf.print(f'Epoch {epoch}:')
 
-        for x, target in train_data:
-        
-            with tf.GradientTape() as tape:
-                pred = model(x)
-                loss = loss_f(target, pred)
+        model.train_step(train_data, loss_f, optimiser)
 
-            gradients = tape.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        
-            loss_m.update_state(loss)
-            acc_m.update_state(target, pred)
+        #for x, target in train_data:
+        #
+        #    with tf.GradientTape() as tape:
+        #        pred = model(x)
+        #        loss = loss_f(target, pred)
+        #
+        #    gradients = tape.gradient(loss, model.trainable_variables)
+        #    optimiser.apply_gradients(zip(gradients, model.trainable_variables))
+        #
+        #    loss_m.update_state(loss)
+        #    acc_m.update_state(target, pred)
         
         tf.print(f'train-{loss_m.name}: {loss_m.result().numpy()}, train-{acc_m.name}: {acc_m.result().numpy()}')
         
@@ -53,14 +84,16 @@ def train_loop(model, optimizer, loss_f, train_data, test_data, num_epochs, loss
         loss_m.reset_states()
         acc_m.reset_state()
 
-        # testing the model
-        for x, target in test_data:
+        ## testing the model
+        #for x, target in test_data:
+        #
+        #    pred = model(x)
+        #    loss = loss_f(target, pred)
+        #
+        #    loss_m.update_state(loss)
+        #    acc_m.update_state(target, pred)
 
-            pred = model(x)
-            loss = loss_f(target, pred)
-        
-            loss_m.update_state(loss)
-            acc_m.update_state(target, pred)
+        loss_m, acc_m = test_step(model, test_data, loss_f, loss_m, acc_m)
 
         tf.print(f'test-{loss_m.name}: {loss_m.result().numpy()}, test-{acc_m.name}: {acc_m.result().numpy()}')
 
