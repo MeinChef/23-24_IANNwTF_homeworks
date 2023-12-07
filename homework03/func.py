@@ -61,21 +61,40 @@ def train_loop(model, train, test, loss_function, optimiser, num_epochs):
 
         model.train_step(train, loss_function, optimiser)
         metrics[0][epoch], metrics[1][epoch] = model.get_metrics()
+        
+        print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
+
         model.reset_metrics()
 
-        print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
 
         model.test_step(test, loss_function)
         metrics[2][epoch], metrics[3][epoch] = model.get_metrics()
-        model.reset_metrics()
 
         print(f'Test Loss: {metrics[2][epoch]}, Test Accuracy: {metrics[3][epoch]}')
 
+        model.reset_metrics()
 
     return metrics
 
-def visualise(data):
-    pass
+def visualise(data, names):
+
+    if len(data) != len(names): raise ValueError('You passed an amount of Names that doesn\'t match the amount of data')
+
+    titles = ['Train Loss', 'Train Acc', 'Test Loss', 'Test Acc']
+    fig, axes = plt.subplots(nrows = len(data), ncols = 4)
+    
+    for i in range(len(data)):
+        for j in range(4):
+            axes[i][j].plot(data[i][j])
+            
+            # setting the column headers
+            if i == 0: 
+                axes[i][j].set_title(titles[j])
+        
+        # setting row labels
+        axes[i][0].set_ylabel(names[i])
+
+    fig.show()
 
 # uhhh nope, don't use 
 def train_loop_deprecated(model, optimiser, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):

@@ -31,6 +31,7 @@ if __name__ == "__main__":
     #model1.set_loss_function(loss_f)
 
     metrics = []
+    names = ['taken model']
 
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 
     #metrics.append(func.train_loop(model1, train_ds, test_ds, optimiser0, NUM_EPOCHS))
 
+    func.visualise(metrics, names)
 
     print(metrics)
 
