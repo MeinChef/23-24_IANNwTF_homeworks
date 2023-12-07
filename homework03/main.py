@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
     optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
 
-    metrics.append(func.train_loop(model0, train_ds, test_ds, optimiser0, NUM_EPOCHS))
+    metrics.append(func.train_loop(model0, train_ds, test_ds, loss_f, optimiser0, NUM_EPOCHS))
 
     func.visualise(metrics, names)
 
