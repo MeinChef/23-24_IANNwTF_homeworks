@@ -5,6 +5,10 @@ import meow
 import taken_model
 
 if __name__ == "__main__":
+
+    #########################
+    # SAVE OPTIMISER IN MODEL
+    #########################
     LEARNING_RATE0 = 0.01
     LEARNING_RATE1 = 0.03
 
@@ -31,15 +35,15 @@ if __name__ == "__main__":
     #model1.set_loss_function(loss_f)
 
     metrics = []
-    names = ['taken model']
+    names = ['taken model', 'Purr']
 
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
     metrics.append(func.train_loop(model_took, train_ds, test_ds, loss_f, optimiser0, NUM_EPOCHS))
 
-    #optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
+    optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
 
-    #metrics.append(func.train_loop(model1, train_ds, test_ds, optimiser0, NUM_EPOCHS))
+    metrics.append(func.train_loop(model0, train_ds, test_ds, optimiser0, NUM_EPOCHS))
 
     func.visualise(metrics, names)
 
