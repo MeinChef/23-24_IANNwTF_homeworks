@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
+import numpy as np
 
 def load_and_prep_cifar(batch_size):
     train, test = tfds.load('cifar10', split = ['train', 'test'], as_supervised = True, shuffle_files = True)
@@ -50,7 +51,35 @@ def test_step(model, test_data, loss_f, loss_m, acc_m):
     return loss_m, acc_m
 
 
-def train_loop(model, optimiser, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
+def train_loop(model, train, test, loss_function, optimiser, num_epochs):
+    
+    metrics = np.empty((4, num_epochs))
+
+    for epoch in range(num_epochs):
+
+        print(f'Epoch {epoch}')
+
+        model.train_step(train, loss_function, optimiser)
+        metrics[0][epoch], metrics[1][epoch] = model.get_metrics()
+        model.reset_metrics()
+
+        print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
+
+        model.test_step(test, loss_function)
+        metrics[2][epoch], metrics[3][epoch] = model.get_metrics()
+        model.reset_metrics()
+
+        print(f'Test Loss: {metrics[2][epoch]}, Test Accuracy: {metrics[3][epoch]}')
+
+
+    return metrics
+
+def visualise(data):
+    pass
+
+# uhhh nope, don't use 
+def train_loop_deprecated(model, optimiser, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
+    return False
 
     #train_acc = tf.TensorArray(dtype = tf.float32, size = num_epochs, name = 'train_acc')
     #train_loss = tf.TensorArray(dtype = tf.float32, size = num_epochs, name = 'train_loss')

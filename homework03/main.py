@@ -1,5 +1,7 @@
 import tensorflow as tf
 import func
+import purr
+import meow
 
 if __name__ == "__main__":
     LEARNING_RATE0 = 0.0001
@@ -8,25 +10,34 @@ if __name__ == "__main__":
     BATCH_SIZE = 128
     NUM_EPOCHS = 20
     
-    optimizer0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
-    optimizer1 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE1)
+    optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
+    optimiser1 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE1)
     
-    loss_f0 = tf.keras.losses.CategoricalCrossentropy()
+    loss_f = tf.keras.losses.CategoricalCrossentropy()
     loss_m = tf.keras.metrics.Mean(name = 'loss')
-    acc_m = tf.keras.metrics.Accuracy(name = 'acc')
+    acc_m = tf.keras.metrics.CategoricalAccuracy(name = 'acc')
 
-    model0 = func.this_cnn()
-    model1 = func.that_cnn()
+    model0 = purr.Purr()
+    model1 = meow.Meow()
+
+    model0.set_metrics(loss_m, acc_m)
+    model1.set_metrics(loss_m, acc_m)
+
+    #model0.set_loss_function(loss_f)
+    #model1.set_loss_function(loss_f)
+
+    metrics = []
 
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
+    metrics.append(func.train_loop(model0, train_ds, test_ds, loss_f, optimiser0, NUM_EPOCHS))
+
+    #optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
+
+    #metrics.append(func.train_loop(model1, train_ds, test_ds, optimiser0, NUM_EPOCHS))
 
 
-    func.train_loop(model0, optimizer0, loss_f0, train_ds, test_ds, NUM_EPOCHS, loss_m, acc_m)
+    print(metrics)
 
-    print("Now it's prime time for Model 2")
-
-
-    func.train_loop(model1, optimizer1, loss_f0, train_ds, test_ds, NUM_EPOCHS, loss_m, acc_m)
 
 

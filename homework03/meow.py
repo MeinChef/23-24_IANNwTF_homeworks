@@ -1,8 +1,10 @@
 import tensorflow as tf
 
-class Purr():
+class Meow(tf.keras.Model):
     def __init__(self, name = "purr"):
         
+        super().__init__()
+
         inputs = tf.keras.Input(shape = (32, 32, 3), dtype = tf.float32)
 
         x = inputs
@@ -26,31 +28,36 @@ class Purr():
 
         self.model = tf.keras.Model(inputs = inputs, outputs = outputs, name = name)
 
-
     def __call__(self, x):
         self.call(x)
 
-    
     def call(self, x):
         self.model(x)
 
+
     def set_metrics(self, loss_metric, accuracy_metric):
         self.loss_metric = loss_metric
-        self.accuracy_metric = accuracy_metric    
+        self.accuracy_metric = accuracy_metric 
 
-    def reset_metrics(self):
-        for m in self.metrics:
-            m.reset_state()
+    def get_metrics(self):
+        return self.loss_metric, self.accuracy_metric
+  
+    def reset_metrics(self): 
+        self.loss_metric.reset_states()
+        self.accuracy_metric.reset_states()
+
+    def set_loss_function(self, loss_function):
+        self.loss_function = loss_function
 
 
     @tf.function
-    def train(self, data, loss_function, optimiser):
+    def train_step(self, data, optimiser):
 
         for x, target in data:
     
             with tf.GradientTape() as tape:
                 pred = self.model(x)
-                loss = loss_function(target, pred)
+                loss = self.loss_function(target, pred)
 
             self.loss_metric.update_states(loss)
             self.accuracy_metric.update_states(target, pred)
@@ -61,15 +68,12 @@ class Purr():
 
 
     @tf.function
-    def test_step(self, data, loss_function):
+    def test_step(self, data):
 
         for x, target in data:
 
             pred = self.model(x)
-            loss = loss_function(target, pred)
+            loss = self.loss_function(target, pred)
     
             self.loss_metric.update_states(loss)
             self.accuracy_metric.update_states(target, pred)
-
-
-
