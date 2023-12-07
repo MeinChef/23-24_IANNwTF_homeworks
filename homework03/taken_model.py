@@ -5,8 +5,8 @@ class Taken_Model(tf.keras.Model):
         
         super().__init__()
 
-        inputs = tf.keras.Input((32, 32, 3), dtype = tf.float32)
-        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = (3,3), activation = tf.nn.relu)(x)
+        inputs = tf.keras.Input(shape = (32, 32, 3), dtype = tf.float32)
+        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = (3,3), activation = tf.nn.relu)(inputs)
         x = tf.keras.layers.Conv2D(filters = 16, kernel_size = (3,3), activation = tf.nn.relu)(x)
 
         x = tf.keras.layers.MaxPooling2D()(x)
@@ -37,7 +37,7 @@ class Taken_Model(tf.keras.Model):
         self.accuracy_metric = accuracy_metric 
 
     def get_metrics(self):
-        return self.loss_metric, self.accuracy_metric
+        return self.loss_metric.result(), self.accuracy_metric.result()
   
     def reset_metrics(self): 
         self.loss_metric.reset_states()
@@ -47,17 +47,17 @@ class Taken_Model(tf.keras.Model):
         self.loss_function = loss_function
 
 
-    @tf.function
-    def train_step(self, data, optimiser):
+    #@tf.function
+    def train_step(self, data, loss_function, optimiser):
 
         for x, target in data:
     
             with tf.GradientTape() as tape:
                 pred = self.model(x)
-                loss = self.loss_function(target, pred)
+                loss = loss_function(target, pred)
 
-            self.loss_metric.update_states(loss)
-            self.accuracy_metric.update_states(target, pred)
+            self.loss_metric.update_state(loss)
+            self.accuracy_metric.update_state(target, pred)
 
         gradients = tape.gradient(loss, self.model.trainable_variables)
         optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
@@ -65,12 +65,14 @@ class Taken_Model(tf.keras.Model):
 
 
     @tf.function
-    def test_step(self, data):
+    def test_step(self, data, loss_function):
+        loss_f = loss_function
 
         for x, target in data:
 
             pred = self.model(x)
-            loss = self.loss_function(target, pred)
+            loss = loss_f(target, pred)
     
-            self.loss_metric.update_states(loss)
-            self.accuracy_metric.update_states(target, pred)
+            self.loss_metric.update_state(loss)
+            self.accuracy_metric.update_state(target, pred)
+
