@@ -23,6 +23,7 @@ if __name__ == "__main__":
     # acc_m = tf.keras.metrics.CategoricalAccuracy(name = 'acc')
 
     # store the models in a dictionary, so that the names list becomes obsolete, and we can have the models numbered from 0-8
+    # memory management - delete one model after training
     model0 = purr.Purr()
     model1 = meow.Meow()
     model_stolen = stolen_model.stolen_Model()
