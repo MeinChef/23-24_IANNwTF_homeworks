@@ -33,7 +33,7 @@ if __name__ == "__main__":
         if i < 4:
             model = purr.Purr()
             if i < 2:
-                model.set_optimiser(lr)
+                model.set_optimiser(learning_rate = lr)
             else:
                 model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
 
