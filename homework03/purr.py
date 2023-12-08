@@ -59,7 +59,7 @@ class Purr(tf.keras.Model):
         pass
 
     @tf.function
-    def train_step(self, data):
+    def train_step(self, data, optimiser):
         
         for x, target in data:
     
@@ -71,7 +71,7 @@ class Purr(tf.keras.Model):
             self.accuracy_metric.update_state(target, pred)
 
             gradients = tape.gradient(loss, self.model.trainable_variables)
-            self.optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
+            optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
         
 
     @tf.function
@@ -88,13 +88,14 @@ class Purr(tf.keras.Model):
 
     def train_loop(self, train, test, num_epochs):
         
+        optimiser = self.optimiser
         metrics = np.empty((4, num_epochs))
 
         for epoch in range(num_epochs):
 
             print(f'Epoch {epoch}')
 
-            self.train_step(train)
+            self.train_step(train, optimiser)
             metrics[0][epoch], metrics[1][epoch] = self.get_metrics()
             
             print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
