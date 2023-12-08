@@ -2,56 +2,57 @@ from imports import tf
 import func
 import purr
 import meow
-import stolen_model
 
 if __name__ == "__main__":
-
-    #########################
-    # SAVE OPTIMISER IN MODEL - done
-    #########################
-    LEARNING_RATE0 = 0.01
-    LEARNING_RATE1 = 0.03
+    LEARNING_RATE0 = 0.001
+    LEARNING_RATE1 = 0.5
 
     BATCH_SIZE = 128
     NUM_EPOCHS = 25
-    
-    # optimiser0 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE0)
-    # optimiser1 = tf.keras.optimizers.Adam(learning_rate = LEARNING_RATE1)
-    # 
-    # loss_f = tf.keras.losses.CategoricalCrossentropy()
-    # loss_m = tf.keras.metrics.Mean(name = 'loss')
-    # acc_m = tf.keras.metrics.CategoricalAccuracy(name = 'acc')
 
-    # store the models in a dictionary, so that the names list becomes obsolete, and we can have the models numbered from 0-8
     # memory management - delete one model after training
-    model0 = purr.Purr()
-    model1 = meow.Meow()
-    model_stolen = stolen_model.stolen_Model()
 
-    model0.set_metrics()
-    model1.set_metrics()
-    model_stolen.set_metrics()
+    #########################################################################
+    # Architectures: Purr, Meow (block network, pyramid shaped network)     #
+    # learning rates: 0.001 and 0.5                                         #
+    # optimiser: Adam, SGD                                                  #
+    #########################################################################
 
-    model0.set_loss_function()
-    model1.set_loss_function()
-    model_stolen.set_loss_function()
-
-    model0.set_optimiser(learning_rate = LEARNING_RATE0)
-    model1.set_optimiser(learning_rate = LEARNING_RATE0)
-    model_stolen.set_optimiser(learning_rate = LEARNING_RATE0)
-
+    # we save each model individually, so that we can free up the memory after training
     metrics = []
-    names = ['Purr', 'Meow', 'stolen model']
-
+    names = ['Purr_ADAM_0.001', 'Purr_ADAM_0.5', 'Purr_SGD_0.001', 'Purr_SGD_0.5', 'Meow_ADAM_0.001', 'Meow_ADAM_0.5', 'Meow_SGD_0.001', 'Meow_SGD_0.5']
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
-    metrics.append(model0.train_loop(train_ds, test_ds, NUM_EPOCHS))
-    metrics.append(model1.train_loop(train_ds, test_ds, NUM_EPOCHS))
-    metrics.append(model_stolen.train_loop(train_ds, test_ds, NUM_EPOCHS))
+    for i in range(8):
+
+        if i%2 == 0:
+            lr = LEARNING_RATE0
+        else:
+            lr = LEARNING_RATE1
+
+        if i < 4:
+            model = purr.Purr()
+            if i < 2:
+                model.set_optimiser(lr)
+            else:
+                model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
+
+        else:
+            model = meow.Meow()
+            if i < 6:
+                model.set_optimiser(lr)
+            else:
+                model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
+
+        model.set_metrics()
+        model.set_loss_function()
+
+        metrics.append(model.train_loop(train_ds, test_ds, NUM_EPOCHS))
+
+        del model
+
 
     func.visualise(metrics, names)
 
     print(metrics)
-
-
 

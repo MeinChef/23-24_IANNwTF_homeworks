@@ -58,7 +58,7 @@ class Purr(tf.keras.Model):
     def write_to_file(self, path_to_file, filename):
         pass
 
-    @tf.function
+    #@tf.function
     def train_step(self, data, optimiser):
         
         for x, target in data:
@@ -72,7 +72,7 @@ class Purr(tf.keras.Model):
 
             gradients = tape.gradient(loss, self.model.trainable_variables)
             optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
-        
+    
 
     @tf.function
     def test_step(self, data):
