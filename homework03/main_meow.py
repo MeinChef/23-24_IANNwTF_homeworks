@@ -1,6 +1,5 @@
 from imports import tf
 import func
-import purr
 import meow
 
 if __name__ == "__main__":
@@ -20,29 +19,21 @@ if __name__ == "__main__":
 
     # we save each model individually, so that we can free up the memory after training
     metrics = []
-    names = ['Purr_ADAM_0.001', 'Purr_ADAM_0.5', 'Purr_SGD_0.001', 'Purr_SGD_0.5', 'Meow_ADAM_0.001', 'Meow_ADAM_0.5', 'Meow_SGD_0.001', 'Meow_SGD_0.5']
+    names = ['Meow_ADAM_0.001', 'Meow_ADAM_0.5', 'Meow_SGD_0.001', 'Meow_SGD_0.5']
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
-    for i in range(8):
+    for i in range(4):
 
         if i%2 == 0:
             lr = LEARNING_RATE0
         else:
             lr = LEARNING_RATE1
 
-        if i < 4:
-            model = purr.Purr()
-            if i < 2:
-                model.set_optimiser(learning_rate = lr)
-            else:
-                model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
-
+        model = meow.Meow()
+        if i < 2:
+            model.set_optimiser(learning_rate = lr)
         else:
-            model = meow.Meow()
-            if i < 6:
-                model.set_optimiser(lr)
-            else:
-                model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
+            model.set_optimiser(optimiser = tf.keras.optimizers.legacy.SGD(learning_rate = lr))
 
         model.set_metrics()
         model.set_loss_function()
