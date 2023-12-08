@@ -1,7 +1,8 @@
-import tensorflow as tf
+from imports import tf
+from imports import np
 
 class Meow(tf.keras.Model):
-    def __init__(self, name = "purr"):
+    def __init__(self, name = "meow"):
         
         super().__init__()
 
@@ -31,11 +32,14 @@ class Meow(tf.keras.Model):
     def __call__(self, x):
         self.call(x)
 
+    @tf.function
     def call(self, x):
         self.model(x)
 
+    def set_loss_function(self, loss_function = tf.keras.losses.CategoricalCrossentropy()):
+        self.loss_function = loss_function
 
-    def set_metrics(self, loss_metric, accuracy_metric):
+    def set_metrics(self, loss_metric = tf.keras.metrics.Mean(name = 'loss'), accuracy_metric = tf.keras.metrics.CategoricalAccuracy(name = 'acc')):
         self.loss_metric = loss_metric
         self.accuracy_metric = accuracy_metric 
 
@@ -46,36 +50,68 @@ class Meow(tf.keras.Model):
         self.loss_metric.reset_states()
         self.accuracy_metric.reset_states()
 
-    def set_loss_function(self, loss_function):
-        self.loss_function = loss_function
+    def set_optimiser(self, optimiser = None, learning_rate = 0.001):
+        '''
+        Sets the Optimiser for the model. 
+            If optimiser = None (default), tf.keras.optimizers.Adam() is being used. learning_rate defaults to 0.001.
+        '''
+        if optimiser == None:
+            self.optimiser = tf.keras.optimizers.Adam(learning_rate = learning_rate)
+        else:
+            self.optimiser = optimiser
 
+    def write_to_file(self, path_to_file, filename):
+        pass
 
-    #@tf.function
-    def train_step(self, data, loss_function, optimiser):
-
+    @tf.function
+    def train_step(self, data):
+        
         for x, target in data:
     
             with tf.GradientTape() as tape:
                 pred = self.model(x)
-                loss = loss_function(target, pred)
+                loss = self.loss_function(target, pred)
 
             self.loss_metric.update_state(loss)
             self.accuracy_metric.update_state(target, pred)
 
-        gradients = tape.gradient(loss, self.model.trainable_variables)
-        optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
+            gradients = tape.gradient(loss, self.model.trainable_variables)
+            self.optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
         
 
-
     @tf.function
-    def test_step(self, data, loss_function):
-        loss_f = loss_function
-
+    def test_step(self, data):
+        
         for x, target in data:
 
             pred = self.model(x)
-            loss = loss_f(target, pred)
+            loss = self.loss_function(target, pred)
     
             self.loss_metric.update_state(loss)
             self.accuracy_metric.update_state(target, pred)
 
+
+    def train_loop(self, train, test, num_epochs):
+        
+        metrics = np.empty((4, num_epochs))
+
+        for epoch in range(num_epochs):
+
+            print(f'Epoch {epoch}')
+
+            self.train_step(train)
+            metrics[0][epoch], metrics[1][epoch] = self.get_metrics()
+            
+            print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
+
+            self.reset_metrics()
+
+
+            self.test_step(test)
+            metrics[2][epoch], metrics[3][epoch] = self.get_metrics()
+
+            print(f'Test Loss: {metrics[2][epoch]}, Test Accuracy: {metrics[3][epoch]}')
+
+            self.reset_metrics()
+
+        return metrics

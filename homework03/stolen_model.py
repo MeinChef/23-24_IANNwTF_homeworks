@@ -1,28 +1,29 @@
 from imports import tf
 from imports import np
 
-class Purr(tf.keras.Model):
-    def __init__(self, name = "purr"):
-
+class stolen_Model(tf.keras.Model):
+    def __init__(self, name = "stolen_model"):
+        
         super().__init__()
 
         inputs = tf.keras.Input(shape = (32, 32, 3), dtype = tf.float32)
-    
-        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = 3, padding = 'same', activation = tf.nn.relu)(inputs)    # shape: [batch_size, 32, 32, 16]
-        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = 3, padding = 'same', activation = tf.nn.relu)(x)         # shape: [batch_size, 32, 32, 16]
-        x = tf.keras.layers.MaxPooling2D()(x)                                                                           # shape: [batch_size, 16, 16, 16]
+        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = (3,3), activation = tf.nn.relu)(inputs)
+        x = tf.keras.layers.Conv2D(filters = 16, kernel_size = (3,3), activation = tf.nn.relu)(x)
 
-        for _ in tf.range(4):
-            x = tf.keras.layers.Conv2D(filters = 32, kernel_size = 3, padding = 'same', activation = tf.nn.relu)(x)     # shape: [batch_size, 16, 16, 32]
-        x = tf.keras.layers.MaxPooling2D()(x)                                                                           # shape: [batch_size, 8, 8, 32]
+        x = tf.keras.layers.MaxPooling2D()(x)
 
-        for _ in tf.range(4):
-            x = tf.keras.layers.Conv2D(filters = 64, kernel_size = 3, padding = 'same', activation = tf.nn.relu)(x)     # shape: [batch_size, 8, 8, 64]
-        x = tf.keras.layers.GlobalAveragePooling2D()(x)                                                                 # shape: [batch_size, 64]
+        x = tf.keras.layers.Conv2D(filters = 32, kernel_size = (3,3), activation = tf.nn.relu)(x)
+        x = tf.keras.layers.Conv2D(filters = 32, kernel_size = (3,3), activation = tf.nn.relu)(x)
+
+        x = tf.keras.layers.MaxPooling2D()(x)
+
+        x = tf.keras.layers.GlobalMaxPooling2D()(x)
+
+        x = tf.keras.layers.Dense(units = 32, activation = tf.nn.relu)(x)
 
         outputs = tf.keras.layers.Dense(units = 10, activation = tf.nn.softmax)(x)
 
-        self.model = tf.keras.Model(inputs = inputs, outputs = outputs, name = name)
+        self.model = tf.keras.Model(inputs, outputs, name = name)
 
     def __call__(self, x):
         self.call(x)
