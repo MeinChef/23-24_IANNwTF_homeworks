@@ -45,5 +45,7 @@ if __name__ == "__main__":
 
     func.visualise(metrics, names)
 
+    input("wait for user to continue")
+
     print(metrics)
 
