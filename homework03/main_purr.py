@@ -23,13 +23,14 @@ if __name__ == "__main__":
     train_ds, test_ds = func.load_and_prep_cifar(BATCH_SIZE)
 
     for i in range(4):
+        
+        model = purr.Purr()
 
         if i%2 == 0:
             lr = LEARNING_RATE0
         else:
             lr = LEARNING_RATE1
 
-        model = purr.Purr()
         if i < 2:
             model.set_optimiser(learning_rate = lr)
         else:

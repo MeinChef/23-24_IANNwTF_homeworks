@@ -9,7 +9,7 @@ class Meow(tf.keras.Model):
         inputs = tf.keras.Input(shape = (32, 32, 3), dtype = tf.float32)
 
         x = inputs
-        for i in tf.range(10):  
+        for i in tf.range(9):  
             ########################
             # that would result in the first layer having 2 filters and the last layer 32768 filters - do we really want to do this? 
             # or just cut off after 11 (range 12) steps, 4069 filter
@@ -63,32 +63,32 @@ class Meow(tf.keras.Model):
     def write_to_file(self, path_to_file, filename):
         pass
 
-    #@tf.function
-    def train_step(self, data, optimiser):
+    @tf.function
+    def train_step(self, data):
         
-        for x, target in data:
+        x, target = data
     
-            with tf.GradientTape() as tape:
-                pred = self.model(x)
-                loss = self.loss_function(target, pred)
+        with tf.GradientTape() as tape:
+            pred = self.model(x)
+            loss = self.loss_function(target, pred)
 
-            self.loss_metric.update_state(loss)
-            self.accuracy_metric.update_state(target, pred)
+        self.loss_metric.update_state(loss)
+        self.accuracy_metric.update_state(target, pred)
 
-            gradients = tape.gradient(loss, self.model.trainable_variables)
-            optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
-    
+        gradients = tape.gradient(loss, self.model.trainable_variables)
+        self.optimiser.apply_gradients(zip(gradients, self.model.trainable_variables))
+
 
     @tf.function
     def test_step(self, data):
-        
-        for x, target in data:
 
-            pred = self.model(x)
-            loss = self.loss_function(target, pred)
-    
-            self.loss_metric.update_state(loss)
-            self.accuracy_metric.update_state(target, pred)
+        x, target = data
+
+        pred = self.model(x)
+        loss = self.loss_function(target, pred)
+
+        self.loss_metric.update_state(loss)
+        self.accuracy_metric.update_state(target, pred)
 
 
     def train_loop(self, train, test, num_epochs):
@@ -99,20 +99,21 @@ class Meow(tf.keras.Model):
         for epoch in range(num_epochs):
 
             print(f'Epoch {epoch}')
+            for data in train:
+                self.train_step(data, optimiser)
 
-            self.train_step(train, optimiser)
             metrics[0][epoch], metrics[1][epoch] = self.get_metrics()
-            
-            print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
-
             self.reset_metrics()
 
+            print(f'Training Loss: {metrics[0][epoch]}, Training Accuracy: {metrics[1][epoch]}')
 
-            self.test_step(test)
+            for data in test:
+                self.test_step(data)
+
             metrics[2][epoch], metrics[3][epoch] = self.get_metrics()
+            self.reset_metrics()
 
             print(f'Test Loss: {metrics[2][epoch]}, Test Accuracy: {metrics[3][epoch]}')
 
-            self.reset_metrics()
 
         return metrics
