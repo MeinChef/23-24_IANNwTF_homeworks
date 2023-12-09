@@ -9,7 +9,7 @@ class Meow(tf.keras.Model):
         inputs = tf.keras.Input(shape = (32, 32, 3), dtype = tf.float32)
 
         x = inputs
-        for i in tf.range(12):  
+        for i in tf.range(10):  
             ########################
             # that would result in the first layer having 2 filters and the last layer 32768 filters - do we really want to do this? 
             # or just cut off after 11 (range 12) steps, 4069 filter

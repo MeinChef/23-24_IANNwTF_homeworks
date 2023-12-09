@@ -94,7 +94,7 @@ def visualise(data, names):
         # setting row labels
         axes[i][0].set_ylabel(names[i])
 
-    fig.show()
+    plt.show()
 
 # def train_loop_deprecated(model, optimiser, loss_f, train_data, test_data, num_epochs, loss_m, acc_m):
 # 
