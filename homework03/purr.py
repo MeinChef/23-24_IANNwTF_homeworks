@@ -88,14 +88,13 @@ class Purr(tf.keras.Model):
 
     def train_loop(self, train, test, num_epochs):
         
-        optimiser = self.optimiser
         metrics = np.empty((4, num_epochs))
 
         for epoch in range(num_epochs):
 
             print(f'Epoch {epoch}')
             for data in train:
-                self.train_step(data, optimiser)
+                self.train_step(data)
 
             metrics[0][epoch], metrics[1][epoch] = self.get_metrics()
             self.reset_metrics()
